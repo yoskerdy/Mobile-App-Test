@@ -1,0 +1,1 @@
+The Instrumentation_pde file should be written in a real pde format file and then be ran on an emulated version of android or on an android mobile phone.

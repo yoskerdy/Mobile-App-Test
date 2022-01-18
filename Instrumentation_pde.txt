@@ -1,0 +1,120 @@
+import processing.video.*;
+
+float a4size = 29.7;
+float a4size_irl;
+
+float measure;
+
+boolean display_result = false;
+
+float coef;
+
+boolean known = false;
+
+boolean shot = false;
+
+boolean LIGNE = false;
+
+boolean crop1 = false;
+boolean crop2 = false;
+
+boolean crop3 = false;
+boolean crop4 = false;
+
+int a4_x1 = -100;
+int a4_y1 = -100;
+
+int a4_x2 = -100;
+int a4_y2 = -100;
+
+Capture cam;
+
+void setup(){
+  //size(640,480);
+  fullScreen();
+  cam = new Capture(this, 1080, 1920, 30);
+  cam.start();
+}
+
+void mousePressed(){
+  
+  if(crop3 == true){
+    crop1 = true;
+    crop2 = false;
+    crop3 = false;
+  }
+  
+  if(crop2 == true){
+    a4_x2 = mouseX;
+    a4_y2 = mouseY;
+    crop1 = false;
+    crop2 = false;
+    crop3 = true;
+    
+    if(known == false){
+      a4size_irl = sqrt(abs(a4_y2-a4_y1)*abs(a4_y2-a4_y1)+abs(a4_x2-a4_x1)*abs(a4_x2-a4_x1));
+      coef = abs(a4size/a4size_irl);
+      known = true;
+    }
+    
+    if(known == true){
+      measure = sqrt(abs(a4_y2-a4_y1)*abs(a4_y2-a4_y1)+abs(a4_x2-a4_x1)*abs(a4_x2-a4_x1)) * coef;
+      display_result = true;
+    }
+    
+  }
+  
+  if(crop1 == true){
+    a4_x1 = mouseX;
+    a4_y1 = mouseY;
+    crop2 = true;
+    LIGNE = true;
+  }
+  
+  if(shot == false){
+    shot = true;
+    crop1 = true;
+  }
+}
+
+void draw(){
+  if(cam.available() && shot == false){
+    cam.read();
+  }
+  background(0);
+  image(cam,0,0);
+  
+  if(crop1 == true){
+    fill(125,125,125,100);
+    
+    ellipse(a4_x1,a4_y1,10,10);
+    ellipse(mouseX,mouseY,10,10);
+    
+    if(LIGNE == true){
+      line(a4_x1,a4_y1,mouseX,mouseY);
+    }
+  }
+  
+  if(crop3 == true){
+    ellipse(a4_x1,a4_y1,10,10);
+    ellipse(a4_x2,a4_y2,10,10);
+    
+    line(a4_x1,a4_y1,a4_x2,a4_y2);
+  }
+  
+  if(display_result == true){
+    textSize(50);
+    fill(0);
+    text(measure,200,200);
+  }
+  
+  
+  textSize(10);
+  fill(0);
+  
+  text(a4_x1,10,50);
+  text(a4_y1,50,50);
+  
+  text(a4_x2,10,100);
+  text(a4_y2,50,100);
+}
